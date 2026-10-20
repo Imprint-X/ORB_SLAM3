@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <utility>
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/Dense>

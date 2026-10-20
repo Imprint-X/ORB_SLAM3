@@ -545,6 +545,12 @@ void System::Shutdown()
         /*usleep(5000);
     }*/
 
+    // Joining is required before a headless caller saves results or exits.
+    // The upstream wait block above is disabled; RequestFinish alone races workers.
+    if(mptLocalMapping && mptLocalMapping->joinable()) mptLocalMapping->join();
+    if(mptLoopClosing && mptLoopClosing->joinable()) mptLoopClosing->join();
+    while(mpLoopCloser->isRunningGBA()) usleep(1000);
+
     if(!mStrSaveAtlasToFile.empty())
     {
         Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);

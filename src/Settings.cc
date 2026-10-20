@@ -260,8 +260,10 @@ namespace ORB_SLAM3 {
             originalCalib1_ = new KannalaBrandt8(vCalibration);
 
             if(sensor_ == System::STEREO || sensor_ == System::IMU_STEREO){
-                int colBegin = readParameter<int>(fSettings,"Camera1.overlappingBegin",found);
-                int colEnd = readParameter<int>(fSettings,"Camera1.overlappingEnd",found);
+                // Older shipped TUM-VI files use Camera.*, newer files Camera1.*.
+                const std::string overlapPrefix = fSettings["Camera1.overlappingBegin"].empty() ? "Camera." : "Camera1.";
+                int colBegin = readParameter<int>(fSettings,overlapPrefix + "overlappingBegin",found);
+                int colEnd = readParameter<int>(fSettings,overlapPrefix + "overlappingEnd",found);
                 vector<int> vOverlapping = {colBegin, colEnd};
 
                 static_cast<KannalaBrandt8*>(calibration1_)->mvLappingArea = vOverlapping;
@@ -315,10 +317,10 @@ namespace ORB_SLAM3 {
             float cx = readParameter<float>(fSettings,"Camera2.cx",found);
             float cy = readParameter<float>(fSettings,"Camera2.cy",found);
 
-            float k0 = readParameter<float>(fSettings,"Camera1.k1",found);
-            float k1 = readParameter<float>(fSettings,"Camera1.k2",found);
-            float k2 = readParameter<float>(fSettings,"Camera1.k3",found);
-            float k3 = readParameter<float>(fSettings,"Camera1.k4",found);
+            float k0 = readParameter<float>(fSettings,"Camera2.k1",found);
+            float k1 = readParameter<float>(fSettings,"Camera2.k2",found);
+            float k2 = readParameter<float>(fSettings,"Camera2.k3",found);
+            float k3 = readParameter<float>(fSettings,"Camera2.k4",found);
 
 
             vCalibration = {fx,fy,cx,cy,k0,k1,k2,k3};

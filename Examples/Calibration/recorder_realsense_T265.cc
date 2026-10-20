@@ -28,9 +28,9 @@
 
 #include <condition_variable>
 
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc.hpp"
 
 #include <librealsense2/rs.hpp>
 #include "librealsense2/rsutil.h"

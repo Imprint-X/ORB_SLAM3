@@ -35,6 +35,7 @@
 
 #include <mutex>
 #include <opencv2/opencv.hpp>
+#include <opencv2/calib3d.hpp>
 
 #include "Eigen/Core"
 #include "sophus/se3.hpp"

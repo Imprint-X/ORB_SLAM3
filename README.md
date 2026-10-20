@@ -1,5 +1,34 @@
 # ORB-SLAM3
 
+## Imprint-X modern dependency build
+
+This fork uses C++17 and target-based linking for OpenCV 4.4+ / 5,
+Eigen 3 / 5 (the CMake package is still named `Eigen3`), Boost serialization,
+OpenSSL Crypto and Pangolin. DBoW2 and g2o build with the main library;
+Sophus is header-only. The historical instructions below describe the original
+release. Use this configuration for the fork:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DOpenCV_DIR=/path/to/opencv/cmake \
+  -DEigen3_DIR=/path/to/eigen/cmake \
+  -DPangolin_DIR=/path/to/pangolin/cmake \
+  -DBoost_DIR=/path/to/boost/cmake \
+  -DOPENSSL_ROOT_DIR=/path/to/openssl \
+  -DORB_SLAM3_BUILD_EXAMPLES=OFF -DORB_SLAM3_BUILD_TESTS=ON
+cmake --build build --parallel 3
+ctest --test-dir build --output-on-failure
+```
+
+`./build.sh` forwards CMake arguments and defaults to four build jobs; set
+`CMAKE_BUILD_PARALLEL_LEVEL` to change that. Dataset examples can be enabled with
+`ORB_SLAM3_BUILD_EXAMPLES=ON`. RealSense requires its separate SDK; ROS wrappers
+retain their historical build configuration and have not been migrated.
+The small test checks distinct left/right KB distortion, projection round trips,
+Sophus transforms and OpenCV/Eigen conversion. This is not a dataset benchmark
+or hardware accuracy evaluation. See [verified scope](MODERN_DEPENDENCIES.md).
+
+
 ### V1.0, December 22th, 2021
 **Authors:** Carlos Campos, Richard Elvira, Juan J. Gómez Rodríguez, [José M. M. Montiel](http://webdiis.unizar.es/~josemari/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/).
 
