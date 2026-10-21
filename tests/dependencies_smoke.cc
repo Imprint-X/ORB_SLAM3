@@ -1,6 +1,7 @@
 // Small numerical/configuration checks; no hardware accuracy claim.
 #include "System.h"
 #include "Settings.h"
+#include "KeypointIndex.h"
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <cmath>
@@ -10,6 +11,16 @@
 int main(int argc, char** argv) {
     if (argc != 2) return 2;
     try {
+        // Fisheye relocalization must address right keys using the concatenated
+        // descriptor index, even when there are no undistorted right keys.
+        std::vector<cv::KeyPoint> left(1), right(1), undistorted;
+        left[0].angle = 10; right[0].angle = 40;
+        if (ORB_SLAM3::KeypointAt(1, 1, left, right, undistorted).angle != 40)
+            throw std::runtime_error("fisheye right-key index mismatch");
+        bool rejected = false;
+        try { ORB_SLAM3::KeypointAt(2, 1, left, right, undistorted); }
+        catch (const std::out_of_range&) { rejected = true; }
+        if (!rejected) throw std::runtime_error("out-of-range key index accepted");
         ORB_SLAM3::Settings settings(argv[1], ORB_SLAM3::System::STEREO);
         cv::FileStorage fs(argv[1], cv::FileStorage::READ);
         for (int camera = 1; camera <= 2; ++camera) {

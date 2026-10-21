@@ -18,6 +18,7 @@
 
 
 #include "ORBmatcher.h"
+#include "KeypointIndex.h"
 
 #include<limits.h>
 
@@ -1970,7 +1971,14 @@ namespace ORB_SLAM3
 
                         if(mbCheckOrientation)
                         {
-                            float rot = pKF->mvKeysUn[i].angle-CurrentFrame.mvKeysUn[bestIdx2].angle;
+                            // Fisheye keyframes concatenate left/right descriptors, but
+                            // mvKeysUn contains left keys only. A right-key index here
+                            // used to read beyond mvKeysUn and corrupt rotHist indexing.
+                            const auto& referenceKey = KeypointAt(i, pKF->NLeft,
+                                pKF->mvKeys, pKF->mvKeysRight, pKF->mvKeysUn);
+                            const auto& currentKey = KeypointAt(bestIdx2, CurrentFrame.Nleft,
+                                CurrentFrame.mvKeys, CurrentFrame.mvKeysRight, CurrentFrame.mvKeysUn);
+                            float rot = referenceKey.angle-currentKey.angle;
                             if(rot<0.0)
                                 rot+=360.0f;
                             int bin = round(rot*factor);

@@ -40,3 +40,17 @@ OpenCV 4 / Eigen 3 compatibility is intended by the source/build configuration b
 has not been revalidated in this change. Linux, Windows, ROS, RealSense, IMU,
 RGB-D, GUI operation, long runs, loop-closure accuracy and dataset benchmarks have
 not been runtime-tested. Do not extrapolate the macOS stereo result to these.
+
+## 2026-10-21: fisheye relocalization index regression
+
+During integration into EgoTac, an actual stereo run crashed in
+`ORBmatcher::SearchByProjection(Frame&, KeyFrame*, ...)` while relocalizing.
+The keyframe's concatenated descriptor/map-point index can address a right-camera
+key, whereas `mvKeysUn` only contains left-camera keys. Reading it with that
+combined index yielded an invalid orientation histogram index. The matcher now
+uses the appropriate left/right key arrays, with checked indexing. A regression
+case covers the right-key index with an empty undistorted array and rejects an
+invalid index. The numerical CTest passes; an ensuing integrated live check
+processed 65 stereo pairs, all OK, and verified normal stop, retained history,
+continued camera preview and cancellation during initialization. This does not
+establish general relocalization accuracy or long-run stability.
